@@ -17,6 +17,8 @@ def start(message):
 
 def user_name(message):
     pass
+
+bot.remove_webhook()
 bot.polling(none_stop=True)
     
     
