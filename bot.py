@@ -43,5 +43,22 @@ def user_pass(message):
     markup.add(telebot.types.InlineKeyboardButton('Список пользователей', callback_data='users'))
     bot.send_message(message.chat.id, 'Пользователь зарегистрирован!', reply_markup=markup)
 
+
+@bot.callback_query_handler(func=lambda call: True)
+def callback(call):
+    conn = sqlite3.connect('nandomo.sql')
+    cur = conn.cursor()
+
+    cur.execute('SELECT * FROM users')
+    users = cur.fetchall()
+
+    info = ''
+    for el in users: 
+        info += f'Имя: {el[1]}, Пароль: {el[2]}\n'
+    cur.close()
+    conn.close()
+
+    bot.send_message(call.message.chat.id, info)
+
 bot.remove_webhook()
 bot.polling(none_stop=True)
