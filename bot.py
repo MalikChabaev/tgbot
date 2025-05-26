@@ -1,13 +1,22 @@
 import telebot
+import sqlite3
 
 bot = telebot.TeleBot('8034006021:AAFvaWnAUg70xucbRtxtEUxQd2GqbjeJcE4')
+@bot.message_handler(commands=['start'])
+def start(message):
+    conn = sqlite3.connect('nandomo.sql')
+    cur = conn.cursor()
 
-@bot.message_handler(commands=['start', 'end']) 
-def handle_commands(message):
-    bot.send_message(message.chat.id, f'{message.from_user.first_name}, привет!')
+    cur.execute('CREATE TABLE IF NOT EXISTS users (id int auto_increment primery key, name varchar(50), pass varchar(50))')
+    conn.commit()
+    cur.close()
+    conn.close()
 
-bot.remove_webhook()         # Удаляем webhook, если он был
-bot.infinity_polling()       # Запускаем polling, бот работает непрерывно
+    bot.send_message(message.chat.id, 'Привет, сейчас тебя зарегестрируем')
+    bot.register_next_step_handler(message, user_name)
 
+def user_name(message):
+    pass
+bot.polling(none_stop=True)
     
     
