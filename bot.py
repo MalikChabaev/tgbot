@@ -1,5 +1,6 @@
 import telebot
 import requests
+import json
 bot = telebot.TeleBot('8034006021:AAFvaWnAUg70xucbRtxtEUxQd2GqbjeJcE4')
 API = '7cd03fb8c220cb871ca5331a21952afa'
 
@@ -11,7 +12,8 @@ def start(message):
 def get_weather(message):
     city = message.text.strip().lower()
     res = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API}&units=metric')
-    bot.reply_to(message, f'Сейчас погода: {res.json()}')
+    data = json.load(res.text)
+    bot.reply_to(message, f'Сейчас погода в {city}: {data["main"]["temp"]}')
 
 bot.remove_webhook()
 bot.polling(none_stop=True)
