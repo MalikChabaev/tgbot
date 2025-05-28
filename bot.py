@@ -12,7 +12,7 @@ def start(message):
 def get_weather(message):
     city = message.text.strip().lower()
     res = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API}&units=metric')
-    data = json.load(res.text)
+    data = json.loads(res.text)
     bot.reply_to(message, f'Сейчас погода в {city}: {data["main"]["temp"]}')
 
 bot.remove_webhook()
