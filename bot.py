@@ -15,14 +15,17 @@ def start(message):
 @bot.message_handler(content_types=['text'])
 def get_weather(message):
     city = message.text.strip().lower()
-    res = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API}&units=metric')
+    res = requests.get(
+        f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API}&units=metric&lang=ru'
+    )
     
     if res.status_code == 200:
-        data = json.loads(res.text)
+        data = res.json()
         temp = data["main"]["temp"]
-        weather = data["weather"][0]["description"]
+        weather_main = data["weather"][0]["main"]
+        weather_desc = data["weather"][0]["description"]
 
-        # Подбор совета по погоде
+        # Подбор совета по температуре
         if temp >= 30:
             advice = "Очень жарко! Надень кепку, пей воду и избегай солнца ☀️🧢💦"
         elif temp >= 20:
@@ -34,7 +37,11 @@ def get_weather(message):
         else:
             advice = "Очень холодно! Надень шапку, перчатки и держись тепла 🥶🧤🧊"
 
-        bot.reply_to(message, f"🌡 В городе {city.title()} сейчас {temp}°C, {weather}.\n{advice}")
+        # Предупреждение о дожде
+        if weather_main in ["Rain", "Drizzle"]:
+            advice += "\n☔️ Похоже, будет дождь. Не забудь зонт!"
+
+        bot.reply_to(message, f"🌡 В городе {city.title()} сейчас {temp}°C, {weather_desc}.\n{advice}")
     else:
         bot.reply_to(message, f"❗️Не удалось найти город '{city}'. Попробуй ещё раз.")
 
